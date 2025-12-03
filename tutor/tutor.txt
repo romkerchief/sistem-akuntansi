@@ -1,0 +1,5 @@
+install python 3.13.2
+buka vscode
+ctrl + ` buat buka terminal
+ketik py install requirements.txt
+ketik git clone https://github.com/romkerchief/sistem-akuntansi.git
