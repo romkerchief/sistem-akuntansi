@@ -1,0 +1,362 @@
+[
+  {
+    "Id": 101,
+    "nomor": 1,
+    "Kategori": "ASET",
+    "nama_akun": "Kas dan setara kas",
+    "Nilai_2025": 31554,
+    "Nilai_2024": 33905
+  },
+  {
+    "Id": 102,
+    "nomor": 2,
+    "Kategori": "ASET",
+    "nama_akun": "Piutang Usaha (Pihak Berelasi + Ketiga)",
+    "Nilai_2025": 12546,
+    "Nilai_2024": 12193
+  },
+  {
+    "Id": 103,
+    "nomor": 3,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Kontrak",
+    "Nilai_2025": 2195,
+    "Nilai_2024": 2578
+  },
+  {
+    "Id": 104,
+    "nomor": 4,
+    "Kategori": "ASET",
+    "nama_akun": "Persediaan",
+    "Nilai_2025": 1085,
+    "Nilai_2024": 1096
+  },
+  {
+    "Id": 105,
+    "nomor": 5,
+    "Kategori": "ASET",
+    "nama_akun": "Pajak Dibayar Dimuka & Restitusi",
+    "Nilai_2025": 2558,
+    "Nilai_2024": 2844
+  },
+  {
+    "Id": 106,
+    "nomor": 6,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Lancar Lainnya",
+    "Nilai_2025": 7462,
+    "Nilai_2024": 9459
+  },
+  {
+    "Id": 107,
+    "nomor": 7,
+    "Kategori": "ASET",
+    "nama_akun": "Investasi Jangka Panjang",
+    "Nilai_2025": 7272,
+    "Nilai_2024": 8335
+  },
+  {
+    "Id": 108,
+    "nomor": 8,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Tetap",
+    "Nilai_2025": 176959,
+    "Nilai_2024": 180566
+  },
+  {
+    "Id": 109,
+    "nomor": 9,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Hak Guna",
+    "Nilai_2025": 28174,
+    "Nilai_2024": 26910
+  },
+  {
+    "Id": 110,
+    "nomor": 10,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Takberwujud",
+    "Nilai_2025": 9266,
+    "Nilai_2024": 9442
+  },
+  {
+    "Id": 111,
+    "nomor": 11,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Pajak Tangguhan",
+    "Nilai_2025": 3627,
+    "Nilai_2024": 3409
+  },
+  {
+    "Id": 112,
+    "nomor": 12,
+    "Kategori": "ASET",
+    "nama_akun": "Aset Tidak Lancar Lainnya",
+    "Nilai_2025": 8078,
+    "Nilai_2024": 7804
+  },
+  {
+    "Id": 113,
+    "nomor": 13,
+    "Kategori": "ASET",
+    "nama_akun": "JUMLAH ASET",
+    "Nilai_2025": 291897,
+    "Nilai_2024": 299675
+  },
+  {
+    "Id": 201,
+    "nomor": 14,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Utang Usaha (Pihak Berelasi + Ketiga)",
+    "Nilai_2025": 14306,
+    "Nilai_2024": 15336
+  },
+  {
+    "Id": 202,
+    "nomor": 15,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Liabilitas Kontrak",
+    "Nilai_2025": 10341,
+    "Nilai_2024": 14192
+  },
+  {
+    "Id": 203,
+    "nomor": 16,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Beban yang masih harus dibayar",
+    "Nilai_2025": 13081,
+    "Nilai_2024": 14192
+  },
+  {
+    "Id": 204,
+    "nomor": 17,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Utang Pajak",
+    "Nilai_2025": 3446,
+    "Nilai_2024": 3293
+  },
+  {
+    "Id": 205,
+    "nomor": 18,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Pinjaman Bank & Obligasi (Jangka Pendek+Panjang)",
+    "Nilai_2025": 53521,
+    "Nilai_2024": 50909
+  },
+  {
+    "Id": 206,
+    "nomor": 19,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Liabilitas Sewa",
+    "Nilai_2025": 24157,
+    "Nilai_2024": 23959
+  },
+  {
+    "Id": 207,
+    "nomor": 20,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Liabilitas Pensiun & Pasca Kerja",
+    "Nilai_2025": 13668,
+    "Nilai_2024": 12732
+  },
+  {
+    "Id": 208,
+    "nomor": 21,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "Utang Lain-lain",
+    "Nilai_2025": 690,
+    "Nilai_2024": 678
+  },
+  {
+    "Id": 209,
+    "nomor": 22,
+    "Kategori": "LIABILITAS",
+    "nama_akun": "JUMLAH LIABILITAS",
+    "Nilai_2025": 136885,
+    "Nilai_2024": 137185
+  },
+  {
+    "Id": 301,
+    "nomor": 23,
+    "Kategori": "EKUITAS",
+    "nama_akun": "Modal Saham",
+    "Nilai_2025": 4953,
+    "Nilai_2024": 4953
+  },
+  {
+    "Id": 302,
+    "nomor": 24,
+    "Kategori": "EKUITAS",
+    "nama_akun": "Tambahan Modal Disetor",
+    "Nilai_2025": 2310,
+    "Nilai_2024": 2310
+  },
+  {
+    "Id": 303,
+    "nomor": 25,
+    "Kategori": "EKUITAS",
+    "nama_akun": "Saldo Laba (Ditahan)",
+    "Nilai_2025": 119664,
+    "Nilai_2024": 124933
+  },
+  {
+    "Id": 304,
+    "nomor": 26,
+    "Kategori": "EKUITAS",
+    "nama_akun": "Komponen Ekuitas Lainnya",
+    "Nilai_2025": 10212,
+    "Nilai_2024": 9898
+  },
+  {
+    "Id": 305,
+    "nomor": 27,
+    "Kategori": "EKUITAS",
+    "nama_akun": "Kepentingan Non-pengendali",
+    "Nilai_2025": 17873,
+    "Nilai_2024": 20396
+  },
+  {
+    "Id": 306,
+    "nomor": 28,
+    "Kategori": "EKUITAS",
+    "nama_akun": "JUMLAH EKUITAS",
+    "Nilai_2025": 155012,
+    "Nilai_2024": 162490
+  },
+  {
+    "Id": 401,
+    "nomor": 29,
+    "Kategori": "PENDAPATAN",
+    "nama_akun": "Pendapatan Usaha",
+    "Nilai_2025": 109617,
+    "Nilai_2024": 112219
+  },
+  {
+    "Id": 501,
+    "nomor": 30,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Operasi & Pemeliharaan",
+    "Nilai_2025": -30284,
+    "Nilai_2024": -29977
+  },
+  {
+    "Id": 502,
+    "nomor": 31,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Penyusutan & Amortisasi",
+    "Nilai_2025": -25067,
+    "Nilai_2024": -24250
+  },
+  {
+    "Id": 503,
+    "nomor": 32,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Karyawan",
+    "Nilai_2025": -11903,
+    "Nilai_2024": -13156
+  },
+  {
+    "Id": 504,
+    "nomor": 33,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Interkoneksi",
+    "Nilai_2025": -5661,
+    "Nilai_2024": -5008
+  },
+  {
+    "Id": 505,
+    "nomor": 34,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Umum & Administrasi",
+    "Nilai_2025": -5003,
+    "Nilai_2024": -4924
+  },
+  {
+    "Id": 506,
+    "nomor": 35,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Pemasaran",
+    "Nilai_2025": -2378,
+    "Nilai_2024": -2527
+  },
+  {
+    "Id": 402,
+    "nomor": 36,
+    "Kategori": "PENDAPATAN",
+    "nama_akun": "Laba Usaha (Operating Profit)",
+    "Nilai_2025": 29173,
+    "Nilai_2024": 32450
+  },
+  {
+    "Id": 507,
+    "nomor": 37,
+    "Kategori": "BEBAN",
+    "nama_akun": "Biaya Pendanaan (Bunga)",
+    "Nilai_2025": -4031,
+    "Nilai_2024": -3857
+  },
+  {
+    "Id": 508,
+    "nomor": 38,
+    "Kategori": "BEBAN",
+    "nama_akun": "Beban Pajak Penghasilan",
+    "Nilai_2025": -5827,
+    "Nilai_2024": -6596
+  },
+  {
+    "Id": 403,
+    "nomor": 39,
+    "Kategori": "PENDAPATAN",
+    "nama_akun": "Laba Periode Berjalan",
+    "Nilai_2025": 20595,
+    "Nilai_2024": 23021
+  },
+  {
+    "Id": 601,
+    "nomor": 40,
+    "Kategori": "DIVIDEN",
+    "nama_akun": "Pembayaran Dividen Tunai",
+    "Nilai_2025": -28406,
+    "Nilai_2024": -24779
+  },
+  {
+    "Id": 701,
+    "nomor": 41,
+    "Kategori": "ARUS KAS",
+    "nama_akun": "Penerimaan Kas dari Pelanggan",
+    "Nilai_2025": 108538,
+    "Nilai_2024": 109057
+  },
+  {
+    "Id": 702,
+    "nomor": 42,
+    "Kategori": "ARUS KAS",
+    "nama_akun": "Pembayaran Kas untuk Beban",
+    "Nilai_2025": -35916,
+    "Nilai_2024": -35830
+  },
+  {
+    "Id": 703,
+    "nomor": 43,
+    "Kategori": "ARUS KAS",
+    "nama_akun": "Pembayaran Kas kepada Karyawan",
+    "Nilai_2025": -11489,
+    "Nilai_2024": -13524
+  },
+  {
+    "Id": 704,
+    "nomor": 44,
+    "Kategori": "ARUS KAS",
+    "nama_akun": "Pembayaran Pajak Penghasilan",
+    "Nilai_2025": -7170,
+    "Nilai_2024": -8802
+  },
+  {
+    "Id": 705,
+    "nomor": 45,
+    "Kategori": "ARUS KAS",
+    "nama_akun": "Pembayaran Bunga",
+    "Nilai_2025": -4098,
+    "Nilai_2024": -3903
+  }
+]
