@@ -1,71 +1,170 @@
 {% extends "laporan_keuangan/base.html" %}
 
+{% block title %}Neraca - Sistem Akuntansi{% endblock %}
+
 {% block content %}
-<h1>Neraca</h1>
+<div class="container-fluid px-0">
+    <!-- Report Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Laporan Neraca</h1>
+        <p class="text-muted mb-1">Laporan Posisi Keuangan</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-<p>
-    <strong>Periode:</strong>
-    {{ period_start }} s/d {{ period_end }}
-</p>
+    <!-- Notice -->
+    <div class="alert alert-info mb-4" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        <em>Neraca disajikan <strong>sebelum penutupan</strong>. Laba periode berjalan belum ditutup ke saldo laba.</em>
+    </div>
 
-<p style="color:#555;">
-    <em>
-        Neraca disajikan <strong>sebelum penutupan</strong>.
-        Laba periode berjalan belum ditutup ke saldo laba.
-    </em>
-</p>
+    <div class="row g-4">
+        <!-- ASET Section -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary bg-opacity-10">
+                    <h5 class="mb-0 text-primary">
+                        <i class="bi bi-wallet2 me-2"></i>Aset
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Akun</th>
+                                <th class="text-end">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in aset %}
+                            <tr>
+                                <td>{{ a.nama }}</td>
+                                <td class="text-end font-monospace">{{ a.saldo|floatformat:0 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-3">Tidak ada data</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-primary">
+                            <tr>
+                                <th>Total Aset</th>
+                                <th class="text-end font-monospace">{{ total_aset|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<h2>Aset</h2>
-<table>
-    {% for a in aset %}
-    <tr>
-        <td>{{ a.nama }}</td>
-        <td>{{ a.saldo }}</td>
-    </tr>
-    {% endfor %}
-</table>
-<h2>
-    Total Aset: {{ total_aset }}
-</h2>
+        <!-- LIABILITAS & EKUITAS Section -->
+        <div class="col-lg-6">
+            <!-- Liabilitas -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-danger bg-opacity-10">
+                    <h5 class="mb-0 text-danger">
+                        <i class="bi bi-credit-card me-2"></i>Liabilitas
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Akun</th>
+                                <th class="text-end">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for l in liabilitas %}
+                            <tr>
+                                <td>{{ l.nama }}</td>
+                                <td class="text-end font-monospace">{{ l.saldo|floatformat:0 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-3">Tidak ada data</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-danger">
+                            <tr>
+                                <th>Total Liabilitas</th>
+                                <th class="text-end font-monospace">{{ total_liabilitas|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
 
-<h2>Liabilitas</h2>
-<table>
-    {% for l in liabilitas %}
-    <tr>
-        <td>{{ l.nama }}</td>
-        <td>{{ l.saldo }}</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <th>Total Liabilitas</th>
-        <th>{{ total_liabilitas }}</th>
-    </tr>
-</table>
+            <!-- Ekuitas -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-opacity-10">
+                    <h5 class="mb-0 text-success">
+                        <i class="bi bi-bank me-2"></i>Ekuitas
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Akun</th>
+                                <th class="text-end">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for e in ekuitas %}
+                            <tr>
+                                <td>{{ e.nama }}</td>
+                                <td class="text-end font-monospace">{{ e.saldo|floatformat:0 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-3">Tidak ada data</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-success">
+                            <tr>
+                                <th>Total Ekuitas</th>
+                                <th class="text-end font-monospace">{{ total_ekuitas|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h2>Ekuitas</h2>
-<table>
-    {% for e in ekuitas %}
-    <tr>
-        <td>{{ e.nama }}</td>
-        <td>{{ e.saldo }}</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <th>Total Ekuitas</th>
-        <th>{{ total_ekuitas }}</th>
-    </tr>
-</table>
+    <!-- Summary Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-dark">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Total Aset</small>
+                            <h4 class="text-primary font-monospace mb-0">{{ total_aset|floatformat:0 }}</h4>
+                        </div>
+                        <div class="col-md-6 border-start">
+                            <small class="text-muted d-block mb-1">Total Liabilitas + Ekuitas</small>
+                            <h4 class="text-dark font-monospace mb-0">
+                                {{ total_liabilitas_ekuitas|floatformat:0 }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h2>
-    Total Liabilitas + Ekuitas:
-    {{ total_liabilitas|add:total_ekuitas }}
-</h2>
-
-<p style="margin-top:1em; color:#555;">
-    <em>
-        Selisih dengan total aset mencerminkan laba bersih periode berjalan
-        yang belum ditutup.
-    </em>
-</p>
-
+    <!-- Footer Note -->
+    <div class="alert alert-secondary mt-4" role="alert">
+        <i class="bi bi-lightbulb me-2"></i>
+        <em>Selisih dengan total aset mencerminkan laba bersih periode berjalan yang belum ditutup.</em>
+    </div>
+</div>
 {% endblock %}

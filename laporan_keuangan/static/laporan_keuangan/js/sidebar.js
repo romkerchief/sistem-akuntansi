@@ -1,65 +1,106 @@
-// ---------- SIDEBAR ----------
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("collapsed");
+/**
+ * Sidebar Navigation Controller
+ * Handles sidebar toggle, menu expansion, and state persistence
+ */
+(function () {
+    'use strict';
 
-    localStorage.setItem(
-        "sidebar-collapsed",
-        sidebar.classList.contains("collapsed")
-    );
+    const STORAGE_KEYS = {
+        collapsed: 'sidebar-collapsed',
+        openMenus: 'open-menus'
+    };
 
-    // If collapsing sidebar, hide all menu items
-    if (sidebar.classList.contains("collapsed")) {
-        document.querySelectorAll(".menu-items").forEach(m => {
-            m.style.display = "none";
-        });
-        localStorage.setItem("open-menus", JSON.stringify([]));
-    }
-}
+    const sidebar = () => document.getElementById('sidebar');
 
-// ---------- MENU GROUP ----------
-function toggleGroup(menuId) {
-    const sidebar = document.getElementById("sidebar");
-    const menu = document.getElementById(menuId);
+    // ---------- Sidebar Toggle ----------
+    window.toggleSidebar = function () {
+        const el = sidebar();
+        if (!el) return;
 
-    // If sidebar is collapsed, expand it first
-    if (sidebar.classList.contains("collapsed")) {
-        sidebar.classList.remove("collapsed");
-        localStorage.setItem("sidebar-collapsed", false);
-    }
+        el.classList.toggle('collapsed');
+        const isCollapsed = el.classList.contains('collapsed');
 
-    const isOpen = menu.style.display === "block";
+        localStorage.setItem(STORAGE_KEYS.collapsed, isCollapsed);
 
-    menu.style.display = isOpen ? "none" : "block";
-
-    saveOpenMenus();
-}
-
-// ---------- STATE PERSISTENCE ----------
-function saveOpenMenus() {
-    const openMenus = [];
-    document.querySelectorAll(".menu-items").forEach(menu => {
-        if (menu.style.display === "block") {
-            openMenus.push(menu.id);
+        // Close all menus when collapsing
+        if (isCollapsed) {
+            closeAllMenus();
+            localStorage.setItem(STORAGE_KEYS.openMenus, '[]');
         }
-    });
-    localStorage.setItem("open-menus", JSON.stringify(openMenus));
-}
+    };
 
-function restoreSidebarState() {
-    const sidebar = document.getElementById("sidebar");
-    const collapsed = localStorage.getItem("sidebar-collapsed") === "true";
+    // ---------- Menu Group Toggle ----------
+    window.toggleGroup = function (menuId) {
+        const el = sidebar();
+        const menu = document.getElementById(menuId);
+        if (!el || !menu) return;
 
-    if (collapsed) {
-        sidebar.classList.add("collapsed");
+        // Expand sidebar if collapsed
+        if (el.classList.contains('collapsed')) {
+            el.classList.remove('collapsed');
+            localStorage.setItem(STORAGE_KEYS.collapsed, false);
+        }
+
+        // Toggle menu visibility
+        const isOpen = menu.style.display === 'block';
+        menu.style.display = isOpen ? 'none' : 'block';
+
+        // Toggle arrow rotation on parent title
+        const title = menu.previousElementSibling;
+        if (title) {
+            title.classList.toggle('open', !isOpen);
+        }
+
+        saveOpenMenus();
+    };
+
+    // ---------- Helper Functions ----------
+    function closeAllMenus() {
+        document.querySelectorAll('.menu-items').forEach(menu => {
+            menu.style.display = 'none';
+        });
+        document.querySelectorAll('.menu-title').forEach(title => {
+            title.classList.remove('open');
+        });
     }
 
-    const openMenus = JSON.parse(localStorage.getItem("open-menus") || "[]");
-    openMenus.forEach(id => {
-        const menu = document.getElementById(id);
-        if (menu) menu.style.display = "block";
-    });
-}
+    function saveOpenMenus() {
+        const openMenus = [];
+        document.querySelectorAll('.menu-items').forEach(menu => {
+            if (menu.style.display === 'block' && menu.id) {
+                openMenus.push(menu.id);
+            }
+        });
+        localStorage.setItem(STORAGE_KEYS.openMenus, JSON.stringify(openMenus));
+    }
 
-// ---------- INIT ----------
-document.addEventListener("DOMContentLoaded", restoreSidebarState);
+    function restoreState() {
+        const el = sidebar();
+        if (!el) return;
+
+        // Restore collapsed state
+        const isCollapsed = localStorage.getItem(STORAGE_KEYS.collapsed) === 'true';
+        el.classList.toggle('collapsed', isCollapsed);
+
+        // Restore open menus (only if not collapsed)
+        if (!isCollapsed) {
+            try {
+                const openMenus = JSON.parse(localStorage.getItem(STORAGE_KEYS.openMenus) || '[]');
+                openMenus.forEach(id => {
+                    const menu = document.getElementById(id);
+                    if (menu) {
+                        menu.style.display = 'block';
+                        const title = menu.previousElementSibling;
+                        if (title) title.classList.add('open');
+                    }
+                });
+            } catch (e) {
+                // Reset if invalid JSON
+                localStorage.setItem(STORAGE_KEYS.openMenus, '[]');
+            }
+        }
+    }
+
+    // ---------- Initialize ----------
+    document.addEventListener('DOMContentLoaded', restoreState);
+})();

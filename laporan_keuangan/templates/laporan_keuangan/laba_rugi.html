@@ -1,32 +1,131 @@
 {% extends "laporan_keuangan/base.html" %}
 
+{% block title %}Laba Rugi - Sistem Akuntansi{% endblock %}
+
 {% block content %}
-<h1>Laporan Laba Rugi</h1>
+<div class="container-fluid px-0">
+    <!-- Report Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Laporan Laba Rugi</h1>
+        <p class="text-muted mb-1">Income Statement</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-<h2>Pendapatan</h2>
-<table>
-    <tr><th>Akun</th><th>Jumlah</th></tr>
-    {% for p in pendapatan %}
-    <tr>
-        <td>{{ p.akun__nama }}</td>
-        <td>{{ p.total }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    <div class="row g-4">
+        <!-- Pendapatan Section -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success bg-opacity-10">
+                    <h5 class="mb-0 text-success">
+                        <i class="bi bi-graph-up-arrow me-2"></i>Pendapatan
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Akun</th>
+                                <th class="text-end">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in pendapatan %}
+                            <tr>
+                                <td>{{ p.akun__nama_akun }}</td>
+                                <td class="text-end font-monospace">{{ p.total|floatformat:0 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-3">Tidak ada pendapatan</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-success">
+                            <tr>
+                                <th>Total Pendapatan</th>
+                                <th class="text-end font-monospace">{{ total_pendapatan|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<h2>Beban</h2>
-<table>
-    <tr><th>Akun</th><th>Jumlah</th></tr>
-    {% for b in beban %}
-    <tr>
-        <td>{{ b.akun__nama }}</td>
-        <td>{{ b.total }}</td>
-    </tr>
-    {% endfor %}
-</table>
+        <!-- Beban Section -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-danger bg-opacity-10">
+                    <h5 class="mb-0 text-danger">
+                        <i class="bi bi-graph-down-arrow me-2"></i>Beban
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Akun</th>
+                                <th class="text-end">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in beban %}
+                            <tr>
+                                <td>{{ b.akun__nama_akun }}</td>
+                                <td class="text-end font-monospace">{{ b.total|floatformat:0 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-3">Tidak ada beban</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-danger">
+                            <tr>
+                                <th>Total Beban</th>
+                                <th class="text-end font-monospace">{{ total_beban|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h2>Ringkasan</h2>
-<p>Total Pendapatan: {{ total_pendapatan }}</p>
-<p>Total Beban: {{ total_beban }}</p>
-<p><strong>Laba Bersih: {{ laba_bersih }}</strong></p>
+    <!-- Summary Section -->
+    <div class="card shadow-sm mt-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-calculator me-2"></i>Ringkasan
+            </h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-borderless mb-0">
+                <tbody>
+                    <tr>
+                        <td>Total Pendapatan</td>
+                        <td class="text-end font-monospace text-success fw-semibold">
+                            {{ total_pendapatan|floatformat:0 }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Total Beban</td>
+                        <td class="text-end font-monospace text-danger fw-semibold">
+                            ({{ total_beban|floatformat:0 }})
+                        </td>
+                    </tr>
+                    <tr class="border-top">
+                        <th class="pt-3 fs-5">Laba Bersih</th>
+                        <th class="text-end font-monospace pt-3 fs-5 text-primary">
+                            {{ laba_bersih|floatformat:0 }}
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

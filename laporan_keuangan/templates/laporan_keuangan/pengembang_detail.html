@@ -1,0 +1,144 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block title %}Profil Pengembang{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-3">
+            <li class="breadcrumb-item">
+                <a href="{% url 'finance:pengembang' %}" class="text-decoration-none">Tim Pengembang</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Profil</li>
+        </ol>
+    </nav>
+
+    <!-- Placeholder Notice -->
+    <div class="alert alert-secondary mb-4" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        <em>Halaman ini adalah scaffold placeholder. Ganti konten dengan biodata pengembang yang sebenarnya.</em>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body py-4">
+                    <!-- Avatar Placeholder -->
+                    <div class="mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mx-auto"
+                            style="width: 120px; height: 120px;">
+                            <i class="bi bi-person-fill text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-1">Nama Lengkap</h4>
+                    <p class="text-muted mb-3">Jabatan / Role</p>
+
+                    <!-- Contact Info -->
+                    <div class="text-start px-3">
+                        <p class="mb-2">
+                            <i class="bi bi-envelope me-2 text-muted"></i>
+                            <span class="text-muted">email@example.com</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-github me-2 text-muted"></i>
+                            <span class="text-muted">github.com/username</span>
+                        </p>
+                        <p class="mb-0">
+                            <i class="bi bi-linkedin me-2 text-muted"></i>
+                            <span class="text-muted">linkedin.com/in/username</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Biodata Section -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>Biodata
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted" style="width: 180px;">Nama Lengkap</td>
+                                <td><strong>[Nama Pengembang]</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">NIM / NPM</td>
+                                <td>[Nomor Induk Mahasiswa]</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Program Studi</td>
+                                <td>[Nama Program Studi]</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Fakultas</td>
+                                <td>[Nama Fakultas]</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Universitas</td>
+                                <td>[Nama Universitas]</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Angkatan</td>
+                                <td>[Tahun Angkatan]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Role & Contribution Section -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-briefcase me-2"></i>Peran dalam Proyek
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Role:</strong> [Jabatan dalam Tim]</p>
+                    <p class="mb-0 text-muted">
+                        [Deskripsi singkat tentang tanggung jawab dan kontribusi pengembang dalam proyek sistem
+                        akuntansi ini.
+                        Jelaskan modul atau fitur apa yang dikerjakan, teknologi yang digunakan, dan pencapaian yang
+                        diraih.]
+                    </p>
+                </div>
+            </div>
+
+            <!-- Skills Section -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-tools me-2"></i>Keahlian Teknis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-primary bg-opacity-75">Python</span>
+                        <span class="badge bg-primary bg-opacity-75">Django</span>
+                        <span class="badge bg-primary bg-opacity-75">HTML/CSS</span>
+                        <span class="badge bg-primary bg-opacity-75">Bootstrap</span>
+                        <span class="badge bg-primary bg-opacity-75">JavaScript</span>
+                        <span class="badge bg-secondary">SQL</span>
+                        <span class="badge bg-secondary">Git</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a href="{% url 'finance:pengembang' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Kembali ke Tim Pengembang
+        </a>
+    </div>
+</div>
+{% endblock %}

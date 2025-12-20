@@ -466,6 +466,8 @@ def neraca(request):
             ekuitas.append(row)
             total_ekuitas += saldo
 
+    total_liabilitas_ekuitas = total_liabilitas + total_ekuitas
+
     context = {
         "aset": aset,
         "liabilitas": liabilitas,
@@ -473,6 +475,7 @@ def neraca(request):
         "total_aset": total_aset,
         "total_liabilitas": total_liabilitas,
         "total_ekuitas": total_ekuitas,
+        "total_liabilitas_ekuitas": total_liabilitas_ekuitas,
         "period_start": period_start,
         "period_end": period_end,
     }

@@ -1,69 +1,134 @@
 {% extends "laporan_keuangan/base.html" %}
 
+{% block title %}Arus Kas - Sistem Akuntansi{% endblock %}
+
 {% block content %}
-<h1>Arus Kas</h1>
+<div class="container-fluid px-0">
+    <!-- Report Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Laporan Arus Kas</h1>
+        <p class="text-muted mb-1">Statement of Cash Flows</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-<p>
-    <strong>Periode:</strong>
-    {{ period_start }} s/d {{ period_end }}
-</p>
+    <div class="row g-4">
+        <!-- Aktivitas Operasi -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-opacity-10">
+                    <h5 class="mb-0 text-success">
+                        <i class="bi bi-gear me-2"></i>Arus Kas dari Aktivitas Operasi
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <tbody>
+                            {% for label, value in operasi.items %}
+                            <tr>
+                                <td class="ps-4">{{ label }}</td>
+                                <td class="text-end font-monospace pe-4">{{ value|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-success">
+                            <tr>
+                                <th class="ps-4">Total Arus Kas Operasi</th>
+                                <th class="text-end font-monospace pe-4">{{ kas_operasi|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<h2>Arus Kas dari Aktivitas Operasi</h2>
-<table>
-    {% for label, value in operasi.items %}
-    <tr>
-        <td>{{ label }}</td>
-        <td style="text-align:right;">{{ value }}</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <th>Total Arus Kas Operasi</th>
-        <th style="text-align:right;">{{ kas_operasi }}</th>
-    </tr>
-</table>
+        <!-- Aktivitas Investasi -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning bg-opacity-10">
+                    <h5 class="mb-0 text-warning">
+                        <i class="bi bi-building me-2"></i>Aktivitas Investasi
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <tbody>
+                            {% for label, value in investasi.items %}
+                            <tr>
+                                <td class="ps-4">{{ label }}</td>
+                                <td class="text-end font-monospace pe-4">{{ value|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-warning">
+                            <tr>
+                                <th class="ps-4">Total</th>
+                                <th class="text-end font-monospace pe-4">{{ kas_investasi|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<h2>Arus Kas dari Aktivitas Investasi</h2>
-<table>
-    {% for label, value in investasi.items %}
-    <tr>
-        <td>{{ label }}</td>
-        <td style="text-align:right;">{{ value }}</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <th>Total Arus Kas Investasi</th>
-        <th style="text-align:right;">{{ kas_investasi }}</th>
-    </tr>
-</table>
+        <!-- Aktivitas Pendanaan -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info bg-opacity-10">
+                    <h5 class="mb-0 text-info">
+                        <i class="bi bi-bank me-2"></i>Aktivitas Pendanaan
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <tbody>
+                            {% for label, value in pendanaan.items %}
+                            <tr>
+                                <td class="ps-4">{{ label }}</td>
+                                <td class="text-end font-monospace pe-4">{{ value|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-info">
+                            <tr>
+                                <th class="ps-4">Total</th>
+                                <th class="text-end font-monospace pe-4">{{ kas_pendanaan|floatformat:0 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h2>Arus Kas dari Aktivitas Pendanaan</h2>
-<table>
-    {% for label, value in pendanaan.items %}
-    <tr>
-        <td>{{ label }}</td>
-        <td style="text-align:right;">{{ value }}</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <th>Total Arus Kas Pendanaan</th>
-        <th style="text-align:right;">{{ kas_pendanaan }}</th>
-    </tr>
-</table>
-
-<hr>
-
-<table>
-    <tr>
-        <td>Kenaikan / (Penurunan) Kas</td>
-        <td style="text-align:right;">{{ kenaikan_kas }}</td>
-    </tr>
-    <tr>
-        <td>Saldo Kas Awal</td>
-        <td style="text-align:right;">{{ kas_awal }}</td>
-    </tr>
-    <tr>
-        <td><strong>Saldo Kas Akhir</strong></td>
-        <td style="text-align:right;"><strong>{{ kas_akhir }}</strong></td>
-    </tr>
-</table>
+    <!-- Cash Reconciliation Summary -->
+    <div class="card shadow-sm mt-4 border-dark">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-cash-stack me-2"></i>Rekonsiliasi Kas
+            </h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-borderless mb-0">
+                <tbody>
+                    <tr>
+                        <td>Kenaikan / (Penurunan) Kas Bersih</td>
+                        <td class="text-end font-monospace fw-semibold">{{ kenaikan_kas|floatformat:0 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Saldo Kas Awal Periode</td>
+                        <td class="text-end font-monospace">{{ kas_awal|floatformat:0 }}</td>
+                    </tr>
+                    <tr class="border-top">
+                        <th class="pt-3 fs-5">Saldo Kas Akhir Periode</th>
+                        <th class="text-end font-monospace pt-3 fs-5 text-primary">{{ kas_akhir|floatformat:0 }}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

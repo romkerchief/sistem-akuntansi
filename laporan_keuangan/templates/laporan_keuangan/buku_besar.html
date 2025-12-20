@@ -1,32 +1,58 @@
 {% extends "laporan_keuangan/base.html" %}
 
-{% block title %}Buku Besar{% endblock %}
+{% block title %}Buku Besar - Sistem Akuntansi{% endblock %}
 
 {% block content %}
-<h2>Buku Besar</h2>
+<div class="container-fluid px-0">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Buku Besar</h1>
+        <p class="text-muted mb-1">General Ledger</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>Kode</th>
-        <th>Akun</th>
-        <th>Total Debit</th>
-        <th>Total Kredit</th>
-        <th>Saldo Akhir</th>
-    </tr>
-
-    {% for row in rows %}
-    <tr>
-        <td>{{ row.kode }}</td>
-        <td>
-        <a href="{% url 'finance:buku_besar_detail' row.akun_id %}">
-            {{ row.nama }}
-        </a>
-        </td>
-        <td>{{ row.debit }}</td>
-        <td>{{ row.kredit }}</td>
-        <td>{{ row.saldo }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+    <!-- Main Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Kode</th>
+                            <th>Akun</th>
+                            <th class="text-end">Total Debit</th>
+                            <th class="text-end">Total Kredit</th>
+                            <th class="text-end">Saldo Akhir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td><code>{{ row.kode }}</code></td>
+                            <td>
+                                <a href="{% url 'finance:buku_besar_detail' row.akun_id %}"
+                                    class="text-decoration-none">
+                                    {{ row.nama }}
+                                    <i class="bi bi-arrow-right-short text-muted"></i>
+                                </a>
+                            </td>
+                            <td class="text-end font-monospace">{{ row.debit|floatformat:0 }}</td>
+                            <td class="text-end font-monospace">{{ row.kredit|floatformat:0 }}</td>
+                            <td class="text-end font-monospace fw-semibold">{{ row.saldo|floatformat:0 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Tidak ada data akun</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,37 +1,72 @@
 {% extends "laporan_keuangan/base.html" %}
 
+{% block title %}Jurnal Pembuka - Sistem Akuntansi{% endblock %}
+
 {% block content %}
-<h1>Jurnal Pembuka</h1>
-<p>
-    <strong>Saldo Awal Tahun Buku</strong><br>
-    <em>Jurnal pembuka digunakan sebagai baseline dan tidak diubah selama periode berjalan.</em>
-</p>
+<div class="container-fluid px-0">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Jurnal Pembuka</h1>
+        <p class="text-muted mb-1">Opening Journal Entry</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-{% for jurnal in jurnal_list %}
-    <h3>
-        {{ jurnal.tanggal }} — {{ jurnal.keterangan }}
-    </h3>
+    <!-- Info Notice -->
+    <div class="alert alert-secondary mb-4" role="alert">
+        <i class="bi bi-lock me-2"></i>
+        <strong>Saldo Awal Tahun Buku</strong> — Jurnal pembuka digunakan sebagai baseline dan tidak diubah selama
+        periode berjalan.
+    </div>
 
-    <table border="1" width="100%">
-        <tr>
-            <th>Akun</th>
-            <th>Debit</th>
-            <th>Kredit</th>
-        </tr>
-
-        {% for d in jurnal.details.all %}
-        <tr>
-            <td>{{ d.akun.nama_akun }}</td>
-            <td>{{ d.debit }}</td>
-            <td>{{ d.kredit }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <p style="color: #666; font-size: 0.9em;">
-        🔒 Jurnal pembuka dikunci untuk menjaga konsistensi laporan keuangan.
-    </p>
-
-{% endfor %}
-
+    {% for jurnal in jurnal_list %}
+    <!-- Journal Entry Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <span class="badge bg-secondary me-2">{{ jurnal.tanggal }}</span>
+            <strong>{{ jurnal.keterangan }}</strong>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Akun</th>
+                        <th class="text-end">Debit</th>
+                        <th class="text-end">Kredit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in jurnal.details.all %}
+                    <tr>
+                        <td>{{ d.akun.nama_akun }}</td>
+                        <td class="text-end font-monospace">
+                            {% if d.debit %}{{ d.debit|floatformat:0 }}{% endif %}
+                        </td>
+                        <td class="text-end font-monospace">
+                            {% if d.kredit %}{{ d.kredit|floatformat:0 }}{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-3">Tidak ada detail</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white text-muted small">
+            <i class="bi bi-lock-fill me-1"></i>
+            Jurnal pembuka dikunci untuk menjaga konsistensi laporan keuangan.
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Tidak ada jurnal pembuka.
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

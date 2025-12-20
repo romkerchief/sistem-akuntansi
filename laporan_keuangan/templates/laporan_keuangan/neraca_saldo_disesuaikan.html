@@ -1,49 +1,95 @@
 {% extends "laporan_keuangan/base.html" %}
 
+{% block title %}Neraca Saldo Disesuaikan - Sistem Akuntansi{% endblock %}
+
 {% block content %}
-<h1>Neraca Saldo Disesuaikan</h1>
+<div class="container-fluid px-0">
+    <!-- Report Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Neraca Saldo Disesuaikan</h1>
+        <p class="text-muted mb-1">Adjusted Trial Balance</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-<p>
-    Periode: {{ period_start }} s/d {{ period_end }}
-</p>
+    <!-- Main Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nama Akun</th>
+                            <th>Kategori</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Kredit</th>
+                            <th class="text-end">Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in rows %}
+                        <tr>
+                            <td><code>{{ r.kode }}</code></td>
+                            <td>{{ r.nama }}</td>
+                            <td>
+                                {% if r.kategori == "ASET" %}
+                                <span class="badge bg-primary bg-opacity-75">{{ r.kategori }}</span>
+                                {% elif r.kategori == "LIABILITAS" %}
+                                <span class="badge bg-danger bg-opacity-75">{{ r.kategori }}</span>
+                                {% elif r.kategori == "EKUITAS" %}
+                                <span class="badge bg-success bg-opacity-75">{{ r.kategori }}</span>
+                                {% elif r.kategori == "PENDAPATAN" %}
+                                <span class="badge bg-info bg-opacity-75">{{ r.kategori }}</span>
+                                {% elif r.kategori == "BEBAN" %}
+                                <span class="badge bg-warning text-dark bg-opacity-75">{{ r.kategori }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ r.kategori }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end font-monospace">{{ r.debit|floatformat:0 }}</td>
+                            <td class="text-end font-monospace">{{ r.kredit|floatformat:0 }}</td>
+                            <td class="text-end font-monospace fw-semibold">{{ r.saldo|floatformat:0 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Tidak ada data akun</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-secondary">
+                        <tr class="fw-bold">
+                            <th colspan="3">TOTAL</th>
+                            <th class="text-end font-monospace">{{ total_debit|floatformat:0 }}</th>
+                            <th class="text-end font-monospace">{{ total_kredit|floatformat:0 }}</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 
-<table border="1">
-    <tr>
-        <th>Kode</th>
-        <th>Nama Akun</th>
-        <th>Kategori</th>
-        <th>Debit</th>
-        <th>Kredit</th>
-        <th>Saldo</th>
-    </tr>
-
-    {% for r in rows %}
-    <tr>
-        <td>{{ r.kode }}</td>
-        <td>{{ r.nama }}</td>
-        <td>{{ r.kategori }}</td>
-        <td>{{ r.debit }}</td>
-        <td>{{ r.kredit }}</td>
-        <td>{{ r.saldo }}</td>
-    </tr>
-    {% endfor %}
-
-    <tr>
-        <th colspan="3">TOTAL</th>
-        <th>{{ total_debit }}</th>
-        <th>{{ total_kredit }}</th>
-        <th></th>
-    </tr>
-</table>
-
-{% if total_debit != total_kredit %}
-<p style="color:red;">
-⚠️ Neraca saldo tidak seimbang!
-</p>
-{% else %}
-<p style="color:green;">
-✔ Neraca saldo seimbang
-</p>
-{% endif %}
-
+    <!-- Balance Status -->
+    {% if total_debit != total_kredit %}
+    <div class="alert alert-danger mt-4 d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+        <div>
+            <strong>Neraca saldo tidak seimbang!</strong><br>
+            <small>Selisih antara total debit dan kredit menunjukkan adanya kesalahan pencatatan.</small>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-success mt-4 d-flex align-items-center" role="alert">
+        <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+        <div>
+            <strong>Neraca saldo seimbang</strong><br>
+            <small>Total debit sama dengan total kredit.</small>
+        </div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

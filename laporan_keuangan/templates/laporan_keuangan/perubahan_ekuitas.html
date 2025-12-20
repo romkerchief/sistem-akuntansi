@@ -1,47 +1,98 @@
 {% extends "laporan_keuangan/base.html" %}
 
+{% block title %}Perubahan Ekuitas - Sistem Akuntansi{% endblock %}
+
 {% block content %}
-<h1>Perubahan Ekuitas</h1>
+<div class="container-fluid px-0">
+    <!-- Report Header -->
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Laporan Perubahan Ekuitas</h1>
+        <p class="text-muted mb-1">Statement of Changes in Equity</p>
+        <p class="text-muted small mb-2"><em>Dalam miliar Rupiah</em></p>
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-calendar3 me-1"></i>
+            Periode: {{ period_start }} s/d {{ period_end }}
+        </span>
+    </div>
 
-<p>
-    <strong>Periode:</strong>
-    {{ period_start }} s/d {{ period_end }}
-</p>
+    <!-- Main Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Kode</th>
+                            <th>Komponen Ekuitas</th>
+                            <th class="text-end">Saldo Awal</th>
+                            <th class="text-end">Perubahan</th>
+                            <th class="text-end">Saldo Akhir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in rows %}
+                        <tr>
+                            <td><code>{{ r.kode }}</code></td>
+                            <td>{{ r.nama }}</td>
+                            <td class="text-end font-monospace">{{ r.awal|floatformat:0 }}</td>
+                            <td class="text-end font-monospace">{{ r.perubahan|floatformat:0 }}</td>
+                            <td class="text-end font-monospace fw-semibold">{{ r.akhir|floatformat:0 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Tidak ada data ekuitas</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-primary">
+                        <tr class="fw-bold">
+                            <th colspan="2">TOTAL EKUITAS</th>
+                            <th class="text-end font-monospace">{{ total_awal|floatformat:0 }}</th>
+                            <th class="text-end font-monospace">{{ total_perubahan|floatformat:0 }}</th>
+                            <th class="text-end font-monospace">{{ total_akhir|floatformat:0 }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 
-<table border="1" cellpadding="6" cellspacing="0">
-    <thead>
-        <tr>
-            <th>Kode</th>
-            <th>Komponen Ekuitas</th>
-            <th>Saldo Awal</th>
-            <th>Perubahan</th>
-            <th>Saldo Akhir</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for r in rows %}
-        <tr>
-            <td>{{ r.kode }}</td>
-            <td>{{ r.nama }}</td>
-            <td style="text-align:right;">{{ r.awal }}</td>
-            <td style="text-align:right;">{{ r.perubahan }}</td>
-            <td style="text-align:right;">{{ r.akhir }}</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <th colspan="2">Total</th>
-            <th style="text-align:right;">{{ total_awal }}</th>
-            <th style="text-align:right;">{{ total_perubahan }}</th>
-            <th style="text-align:right;">{{ total_akhir }}</th>
-        </tr>
-    </tbody>
-</table>
-
-<hr>
-
-<p>
-    <strong>Laba Bersih Periode:</strong> {{ laba_bersih }}<br>
-    <strong>Dividen:</strong> {{ dividen }}
-</p>
-
+    <!-- Additional Info Cards -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-graph-up-arrow text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <small class="text-muted d-block">Laba Bersih Periode</small>
+                            <h4 class="mb-0 font-monospace text-success">{{ laba_bersih|floatformat:0 }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-danger bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-cash-coin text-danger fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <small class="text-muted d-block">Dividen Dibayarkan</small>
+                            <h4 class="mb-0 font-monospace text-danger">{{ dividen|floatformat:0 }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
