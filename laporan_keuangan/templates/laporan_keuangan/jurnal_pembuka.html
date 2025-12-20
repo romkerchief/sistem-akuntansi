@@ -2,7 +2,10 @@
 
 {% block content %}
 <h1>Jurnal Pembuka</h1>
-<p>Saldo Awal Tahun Buku</p>
+<p>
+    <strong>Saldo Awal Tahun Buku</strong><br>
+    <em>Jurnal pembuka digunakan sebagai baseline dan tidak diubah selama periode berjalan.</em>
+</p>
 
 {% for jurnal in jurnal_list %}
     <h3>
@@ -24,17 +27,11 @@
         </tr>
         {% endfor %}
     </table>
-    <br>
-    <a href="{% url 'finance:edit_jurnal' jurnal.id %}">Edit</a>
-    <form method="post"
-        action="{% url 'finance:delete_jurnal' jurnal.id %}"
-        style="display:inline;"
-        onsubmit="return confirm('HAPUS JURNAL PEMBUKA?\n\nIni akan menghapus seluruh saldo awal.');">
-        {% csrf_token %}
-        <button type="submit" style="color:red;">
-            🗑 Hapus Jurnal Pembuka
-        </button>
-    </form>
+
+    <p style="color: #666; font-size: 0.9em;">
+        🔒 Jurnal pembuka dikunci untuk menjaga konsistensi laporan keuangan.
+    </p>
+
 {% endfor %}
 
 {% endblock %}

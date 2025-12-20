@@ -5,9 +5,14 @@
 
 <p>
     <strong>Periode:</strong>
-    {{ request.session.period_start }}
-    s/d
-    {{ request.session.period_end }}
+    {{ period_start }} s/d {{ period_end }}
+</p>
+
+<p style="color:#555;">
+    <em>
+        Neraca disajikan <strong>sebelum penutupan</strong>.
+        Laba periode berjalan belum ditutup ke saldo laba.
+    </em>
 </p>
 
 <h2>Aset</h2>
@@ -20,8 +25,7 @@
     {% endfor %}
 </table>
 <h2>
-    Total aset
-    {{ total_aset }}
+    Total Aset: {{ total_aset }}
 </h2>
 
 <h2>Liabilitas</h2>
@@ -56,4 +60,12 @@
     Total Liabilitas + Ekuitas:
     {{ total_liabilitas|add:total_ekuitas }}
 </h2>
+
+<p style="margin-top:1em; color:#555;">
+    <em>
+        Selisih dengan total aset mencerminkan laba bersih periode berjalan
+        yang belum ditutup.
+    </em>
+</p>
+
 {% endblock %}

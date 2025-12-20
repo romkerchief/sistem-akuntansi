@@ -406,11 +406,6 @@ def neraca(request):
             jenis="GENERAL",
             tanggal__range=(period_start, period_end)
         )
-        |
-        Jurnal.objects.filter(
-            jenis="CLOSING",
-            tanggal__lte=period_end
-        )
     )
 
     # 2. Ambil detail jurnal hanya untuk akun Neraca
