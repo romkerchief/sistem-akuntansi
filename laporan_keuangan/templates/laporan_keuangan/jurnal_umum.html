@@ -1,0 +1,36 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block content %}
+<h1>Jurnal Umum</h1>
+
+{% for jurnal in jurnal_list %}
+    <h3>
+        {{ jurnal.tanggal }} — {{ jurnal.keterangan }}
+    </h3>
+
+    <table border="1" width="100%">
+        <tr>
+            <th>Akun</th>
+            <th>Debit</th>
+            <th>Kredit</th>
+        </tr>
+
+        {% for d in jurnal.details.all %}
+        <tr>
+            <td>{{ d.akun.nama_akun }}</td>
+            <td>{{ d.debit }}</td>
+            <td>{{ d.kredit }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="{% url 'finance:edit_jurnal' jurnal.id %}">Edit</a>
+    <form method="post" action="{% url 'finance:delete_jurnal' jurnal.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Hapus jurnal ini?')">
+            🗑 Hapus
+    </button>
+    </form>
+{% endfor %}
+
+{% endblock %}

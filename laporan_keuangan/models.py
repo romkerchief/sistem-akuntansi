@@ -1,27 +1,68 @@
 from django.db import models
 
-# Create your models here.
-class Akun(models.Model):
-    # This matches your JSON keys: "Id", "Kategori", "nama_akun"
-    kode_akun = models.IntegerField(primary_key=True) # Assuming "Id" is the code like 101, 102
+
+class ChartOfAccount(models.Model):
+    KATEGORI_CHOICES = [
+        ("ASET", "Aset"),
+        ("LIABILITAS", "Liabilitas"),
+        ("EKUITAS", "Ekuitas"),
+        ("PENDAPATAN", "Pendapatan"),
+        ("BEBAN", "Beban"),
+        ("DIVIDEN", "Dividen"),
+        ("ARUS_KAS", "Arus Kas"),
+    ]
+
+    SALDO_NORMAL_CHOICES = [
+        ("DEBIT", "Debit"),
+        ("KREDIT", "Kredit"),
+    ]
+
+    kode_akun = models.CharField(max_length=10, unique=True)
     nama_akun = models.CharField(max_length=255)
-    kategori = models.CharField(max_length=50) # ASET, BEBAN, etc.
-    
+    kategori = models.CharField(max_length=20, choices=KATEGORI_CHOICES)
+    saldo_normal = models.CharField(max_length=6, choices=SALDO_NORMAL_CHOICES)
+
     def __str__(self):
         return f"{self.kode_akun} - {self.nama_akun}"
-
+    
 class Jurnal(models.Model):
-    # This stores the "Header" (Date, Description)
+    JENIS_CHOICES = [
+        ("OPENING", "Jurnal Pembuka"),
+        ("GENERAL", "Jurnal Umum"),
+        ("CLOSING", "Jurnal Penutup"),
+    ]
+
     tanggal = models.DateField()
     keterangan = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-class JurnalItem(models.Model):
-    # This stores the lines: Account, Debit, Credit
-    jurnal = models.ForeignKey(Jurnal, on_delete=models.CASCADE, related_name='items')
-    akun = models.ForeignKey(Akun, on_delete=models.CASCADE)
-    debit = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    kredit = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    jenis = models.CharField(
+        max_length=10,
+        choices=JENIS_CHOICES,
+        default="GENERAL"
+    )
 
     def __str__(self):
-        return f"{self.akun.nama_akun}: D{self.debit} | K{self.kredit}"
+        return f"{self.tanggal} - {self.keterangan}"
+
+class JurnalDetail(models.Model):
+    jurnal = models.ForeignKey(
+        Jurnal,
+        related_name="details",
+        on_delete=models.CASCADE
+    )
+    akun = models.ForeignKey(
+        ChartOfAccount,
+        on_delete=models.CASCADE
+    )
+    debit = models.DecimalField(max_digits=18, decimal_places=2, default=0)
+    kredit = models.DecimalField(max_digits=18, decimal_places=2, default=0)
+
+class Period(models.Model):
+    kode = models.CharField(max_length=20, unique=True)
+    nama = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.nama
+    

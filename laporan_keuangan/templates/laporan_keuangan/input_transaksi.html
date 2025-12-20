@@ -1,0 +1,69 @@
+{% extends "laporan_keuangan/base.html" %}
+{% load static %}
+{% block title %}Input Transaksi{% endblock %}
+
+{% block content %}
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+<h2>Input Transaksi</h2>
+<form method="post">
+    {% csrf_token %}
+
+    <p>
+        Tanggal:
+        <input type="date" name="tanggal" value="{{ today }}" required>
+    </p>
+
+    <p>
+        Keterangan:
+        <input type="text" name="keterangan" required>
+    </p>
+
+    <hr>
+
+    <table id="journal-lines" border="1">
+        <thead>
+            <tr>
+                <th>Akun</th>
+                <th>Posisi</th>
+                <th>Jumlah</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="journal-line">
+                <td>
+                    <select name="akun[]" required>
+                        {% for akun in akun_list %}
+                        <option value="{{ akun.id }}">
+                            {{ akun.kode_akun }} - {{ akun.nama_akun }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="posisi[]" required>
+                        <option value="DEBIT">Debit</option>
+                        <option value="KREDIT">Kredit</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="jumlah[]" step="0.01" required>
+                </td>
+                <td>
+                    <button type="button" class="add-line">+</button>
+                    <button type="button" class="remove-line">–</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <button type="submit">Simpan</button>
+</form>
+
+<script src="{% static 'laporan_keuangan/js/jurnal.js' %}"></script>
+
+{% endblock %}

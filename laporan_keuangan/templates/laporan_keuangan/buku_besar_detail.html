@@ -1,0 +1,37 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block title %}Buku Besar - {{ akun.nama_akun }}{% endblock %}
+
+{% block content %}
+<h2>Buku Besar</h2>
+<p>
+    <strong>{{ akun.kode_akun }} - {{ akun.nama_akun }}</strong><br>
+    Saldo Normal: {{ akun.saldo_normal }}
+</p>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Tanggal</th>
+        <th>Keterangan</th>
+        <th>Debit</th>
+        <th>Kredit</th>
+        <th>Saldo</th>
+    </tr>
+
+    {% for r in rows %}
+    <tr>
+        <td>{{ r.tanggal }}</td>
+        <td>{{ r.keterangan }}</td>
+        <td>{{ r.debit }}</td>
+        <td>{{ r.kredit }}</td>
+        <td>{{ r.saldo }}</td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+        <td colspan="4"><strong>Saldo Akhir</strong></td>
+        <td><strong>{{ saldo_akhir }}</strong></td>
+    </tr>
+</table>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'laporan_keuangan/css/layout.css' %}">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Sistem Akuntansi{% endblock %}</title>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+    <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
+    <div>
+        Periode: {{ period_start }} – {{ period_end }}
+    </div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+    <div id="sidebar" class="sidebar collapsed">
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleGroup('jurnal-menu')">
+                📘 Jurnal
+            </div>
+            <div id="jurnal-menu" class="menu-items">
+                <a href="{% url 'finance:jurnal_pembuka' %}">Jurnal Pembuka</a>
+                <a href="{% url 'finance:jurnal_umum' %}">Jurnal Umum</a>
+                <a href="{% url 'finance:buku_besar' %}">Buku Besar</a>
+            </div>
+        </div>
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleGroup('laporan-menu')">
+                📊 Laporan
+            </div>
+            <div id="laporan-menu" class="menu-items">
+                <a href="{% url 'finance:laba_rugi' %}">Laba Rugi</a>
+                <a href="{% url 'finance:neraca' %}">Neraca</a>
+                <a href="{% url 'finance:neraca_saldo_disesuaikan' %}">NSD</a>
+                <a href="{% url 'finance:perubahan_ekuitas' %}">Perubahan Ekuitas</a>
+                <a href="{% url 'finance:arus_kas' %}">Arus Kas</a>
+            </div>
+        </div>
+        <div class="menu-group">
+            <a href="{% url 'finance:home' %}">🏠 Dashboard</a>
+            <a href="{% url 'finance:input_transaksi' %}">✍️ Input Transaksi</a>
+        </div>
+    </div>
+    <div class="content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<script src="{% static 'laporan_keuangan/js/sidebar.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block content %}
+<h1>Laporan Laba Rugi</h1>
+
+<h2>Pendapatan</h2>
+<table>
+    <tr><th>Akun</th><th>Jumlah</th></tr>
+    {% for p in pendapatan %}
+    <tr>
+        <td>{{ p.akun__nama }}</td>
+        <td>{{ p.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Beban</h2>
+<table>
+    <tr><th>Akun</th><th>Jumlah</th></tr>
+    {% for b in beban %}
+    <tr>
+        <td>{{ b.akun__nama }}</td>
+        <td>{{ b.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Ringkasan</h2>
+<p>Total Pendapatan: {{ total_pendapatan }}</p>
+<p>Total Beban: {{ total_beban }}</p>
+<p><strong>Laba Bersih: {{ laba_bersih }}</strong></p>
+{% endblock %}

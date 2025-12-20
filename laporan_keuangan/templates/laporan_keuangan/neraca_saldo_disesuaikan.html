@@ -1,0 +1,49 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block content %}
+<h1>Neraca Saldo Disesuaikan</h1>
+
+<p>
+    Periode: {{ period_start }} s/d {{ period_end }}
+</p>
+
+<table border="1">
+    <tr>
+        <th>Kode</th>
+        <th>Nama Akun</th>
+        <th>Kategori</th>
+        <th>Debit</th>
+        <th>Kredit</th>
+        <th>Saldo</th>
+    </tr>
+
+    {% for r in rows %}
+    <tr>
+        <td>{{ r.kode }}</td>
+        <td>{{ r.nama }}</td>
+        <td>{{ r.kategori }}</td>
+        <td>{{ r.debit }}</td>
+        <td>{{ r.kredit }}</td>
+        <td>{{ r.saldo }}</td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+        <th colspan="3">TOTAL</th>
+        <th>{{ total_debit }}</th>
+        <th>{{ total_kredit }}</th>
+        <th></th>
+    </tr>
+</table>
+
+{% if total_debit != total_kredit %}
+<p style="color:red;">
+⚠️ Neraca saldo tidak seimbang!
+</p>
+{% else %}
+<p style="color:green;">
+✔ Neraca saldo seimbang
+</p>
+{% endif %}
+
+{% endblock %}

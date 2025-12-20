@@ -1,0 +1,87 @@
+/* ===== Base ===== */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* ===== Top bar ===== */
+.topbar {
+    height: 50px;
+    background: #1f2937;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    justify-content: space-between;
+}
+
+.toggle-btn {
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* ===== Layout ===== */
+.layout {
+    display: flex;
+    height: calc(100vh - 50px);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 220px;
+    background: #111827;
+    color: white;
+    padding: 15px;
+    transition: width 0.2s ease;
+    overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+/* Menu groups */
+.menu-group {
+    margin-bottom: 15px;
+}
+
+.menu-title {
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Menu items */
+.menu-items a,
+.menu-group > a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+/* Collapsed behavior */
+.sidebar.collapsed .menu-items {
+    display: none;
+}
+
+.sidebar.collapsed .menu-title {
+    text-align: center;
+}
+
+/* ===== Main content ===== */
+.content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* ===== Flash messages ===== */
+.flash {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    background: #d1fae5;
+    color: #065f46;
+}

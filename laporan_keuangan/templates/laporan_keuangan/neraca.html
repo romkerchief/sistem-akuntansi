@@ -1,0 +1,59 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block content %}
+<h1>Neraca</h1>
+
+<p>
+    <strong>Periode:</strong>
+    {{ request.session.period_start }}
+    s/d
+    {{ request.session.period_end }}
+</p>
+
+<h2>Aset</h2>
+<table>
+    {% for a in aset %}
+    <tr>
+        <td>{{ a.nama }}</td>
+        <td>{{ a.saldo }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<h2>
+    Total aset
+    {{ total_aset }}
+</h2>
+
+<h2>Liabilitas</h2>
+<table>
+    {% for l in liabilitas %}
+    <tr>
+        <td>{{ l.nama }}</td>
+        <td>{{ l.saldo }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <th>Total Liabilitas</th>
+        <th>{{ total_liabilitas }}</th>
+    </tr>
+</table>
+
+<h2>Ekuitas</h2>
+<table>
+    {% for e in ekuitas %}
+    <tr>
+        <td>{{ e.nama }}</td>
+        <td>{{ e.saldo }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <th>Total Ekuitas</th>
+        <th>{{ total_ekuitas }}</th>
+    </tr>
+</table>
+
+<h2>
+    Total Liabilitas + Ekuitas:
+    {{ total_liabilitas|add:total_ekuitas }}
+</h2>
+{% endblock %}

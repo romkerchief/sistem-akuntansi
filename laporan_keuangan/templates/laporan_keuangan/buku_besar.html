@@ -1,0 +1,32 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block title %}Buku Besar{% endblock %}
+
+{% block content %}
+<h2>Buku Besar</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Kode</th>
+        <th>Akun</th>
+        <th>Total Debit</th>
+        <th>Total Kredit</th>
+        <th>Saldo Akhir</th>
+    </tr>
+
+    {% for row in rows %}
+    <tr>
+        <td>{{ row.kode }}</td>
+        <td>
+        <a href="{% url 'finance:buku_besar_detail' row.akun_id %}">
+            {{ row.nama }}
+        </a>
+        </td>
+        <td>{{ row.debit }}</td>
+        <td>{{ row.kredit }}</td>
+        <td>{{ row.saldo }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

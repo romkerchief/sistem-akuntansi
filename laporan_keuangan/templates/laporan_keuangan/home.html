@@ -1,0 +1,25 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block content %}
+<h1>Pilih Periode Akuntansi</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <select name="period_id">
+        {% for p in periods %}
+            <option value="{{ p.id }}"
+                {% if active_period and p.id == active_period.id %}selected{% endif %}>
+                {{ p.nama }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Pilih Periode</button>
+</form>
+
+{% if period_start and period_end %}
+<p>
+    <strong>Periode aktif:</strong>
+    {{ period_start }} s/d {{ period_end }}
+</p>
+{% endif %}
+{% endblock %}

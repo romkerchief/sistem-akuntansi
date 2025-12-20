@@ -1,0 +1,47 @@
+{% extends "laporan_keuangan/base.html" %}
+
+{% block content %}
+<h1>Perubahan Ekuitas</h1>
+
+<p>
+    <strong>Periode:</strong>
+    {{ period_start }} s/d {{ period_end }}
+</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Kode</th>
+            <th>Komponen Ekuitas</th>
+            <th>Saldo Awal</th>
+            <th>Perubahan</th>
+            <th>Saldo Akhir</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in rows %}
+        <tr>
+            <td>{{ r.kode }}</td>
+            <td>{{ r.nama }}</td>
+            <td style="text-align:right;">{{ r.awal }}</td>
+            <td style="text-align:right;">{{ r.perubahan }}</td>
+            <td style="text-align:right;">{{ r.akhir }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th colspan="2">Total</th>
+            <th style="text-align:right;">{{ total_awal }}</th>
+            <th style="text-align:right;">{{ total_perubahan }}</th>
+            <th style="text-align:right;">{{ total_akhir }}</th>
+        </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<p>
+    <strong>Laba Bersih Periode:</strong> {{ laba_bersih }}<br>
+    <strong>Dividen:</strong> {{ dividen }}
+</p>
+
+{% endblock %}
