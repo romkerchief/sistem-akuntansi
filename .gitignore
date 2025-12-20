@@ -6,5 +6,5 @@ __pycache__/
 venv/
 env/
 .DS_Store
-backup_before_reset.json
-csvjson 2.json
+.backup_before_reset.json
+.csvjson 2.json
