@@ -216,10 +216,12 @@ def input_transaksi(request):
                 total_kredit += jumlah
 
         if total_debit != total_kredit:
-            return render(request, "laporan_keuangan/input_transaksi_test.html", {
+            messages.error(request, "Total debit harus sama dengan total kredit.")
+            return render(request, "laporan_keuangan/input_transaksi.html", {
                 "akun_list": akun_list,
                 "today": date.today(),
-                "error": "Total debit harus sama dengan total kredit."
+                "period_start": period_start,
+                "period_end": period_end,
             })
 
         jurnal = Jurnal.objects.create(
@@ -239,6 +241,7 @@ def input_transaksi(request):
                 kredit=jumlah if posisi == "KREDIT" else 0,
             )
 
+        messages.success(request, "Transaksi berhasil disimpan.")
         return redirect("finance:input_transaksi")
 
     return render(request, "laporan_keuangan/input_transaksi.html", {
