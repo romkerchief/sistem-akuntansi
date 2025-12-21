@@ -1,54 +1,109 @@
-from django.db import transaction
-from django.db.models import Sum
-from laporan_keuangan.models import Jurnal, JurnalDetail, ChartOfAccount
+import json
+import os
+import django
+from decimal import Decimal
+from datetime import date
 
-def close_period(period_start, period_end):
-    pendapatan = JurnalDetail.objects.filter(
-        akun__kategori="PENDAPATAN",
-        jurnal__jenis="GENERAL",
-        jurnal__tanggal__range=(period_start, period_end)
+# --- Django setup ---
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "laporan_keuangan_telkom.settings")
+django.setup()
+
+from laporan_keuangan.models import ChartOfAccount, Jurnal, JurnalDetail
+
+JSON_FILE = "csvjson 2.json"
+OPENING_DATE = date(2025, 1, 1)
+SALDO_LABA_NAMA = "Saldo Laba (Ditahan)"
+
+EXCLUDE_NAMES = {
+    "JUMLAH ASET",
+    "JUMLAH LIABILITAS",
+    "JUMLAH EKUITAS",
+    "Laba Usaha (Operating Profit)",
+    "Laba Periode Berjalan",
+}
+
+def main():
+    with open(JSON_FILE, encoding="utf-8") as f:
+        data = json.load(f)
+
+    jurnal = Jurnal.objects.create(
+        tanggal=OPENING_DATE,
+        keterangan="Jurnal Pembuka FY 2025 (Saldo Akhir 2024)",
+        jenis="OPENING",
     )
 
-    beban = JurnalDetail.objects.filter(
-        akun__kategori="BEBAN",
-        jurnal__jenis="GENERAL",
-        jurnal__tanggal__range=(period_start, period_end)
-    )
+    total_debit = Decimal("0")
+    total_kredit = Decimal("0")
 
-    total_pendapatan = pendapatan.aggregate(total=Sum("kredit"))["total"] or 0
-    total_beban = beban.aggregate(total=Sum("debit"))["total"] or 0
-    laba_bersih = total_pendapatan - total_beban
+    saldo_laba = ChartOfAccount.objects.get(nama_akun=SALDO_LABA_NAMA)
 
-    saldo_laba = ChartOfAccount.objects.get(kode_akun="3000-RE")
+    for row in data:
+        nama = row.get("nama_akun")
+        kategori = row.get("Kategori")
+        nilai = row.get("Nilai_2024")
 
-    with transaction.atomic():
-        jurnal = Jurnal.objects.create(
-            tanggal=period_end,
-            keterangan="Penutupan laba rugi periode",
-            jenis="GENERAL"
+        if not nama or not kategori or nilai is None:
+            continue
+
+        if nama in EXCLUDE_NAMES:
+            continue
+
+        nilai = Decimal(str(nilai))
+
+        try:
+            akun = ChartOfAccount.objects.get(nama_akun=nama)
+        except ChartOfAccount.DoesNotExist:
+            print(f"[SKIP] Akun tidak ditemukan: {nama}")
+            continue
+
+        debit = Decimal("0")
+        kredit = Decimal("0")
+
+        if akun.saldo_normal == "DEBIT":
+            debit = nilai
+            total_debit += nilai
+        else:
+            kredit = nilai
+            total_kredit += nilai
+
+        JurnalDetail.objects.create(
+            jurnal=jurnal,
+            akun=akun,
+            debit=debit,
+            kredit=kredit,
         )
 
-        for d in pendapatan:
-            JurnalDetail.objects.create(
-                jurnal=jurnal,
-                akun=d.akun,
-                debit=d.kredit,
-                kredit=0
-            )
+    # --- Balancing via Saldo Laba ---
+    selisih = total_debit - total_kredit
 
-        for d in beban:
-            JurnalDetail.objects.create(
-                jurnal=jurnal,
-                akun=d.akun,
-                debit=0,
-                kredit=d.debit
-            )
-
-        # ONLY net income
-        if laba_bersih != 0:
+    if selisih != 0:
+        if selisih > 0:
+            # Debit lebih besar → kredit saldo laba
             JurnalDetail.objects.create(
                 jurnal=jurnal,
                 akun=saldo_laba,
-                debit=0 if laba_bersih > 0 else abs(laba_bersih),
-                kredit=laba_bersih if laba_bersih > 0 else 0
+                debit=Decimal("0"),
+                kredit=selisih,
             )
+            total_kredit += selisih
+        else:
+            # Kredit lebih besar → debit saldo laba
+            JurnalDetail.objects.create(
+                jurnal=jurnal,
+                akun=saldo_laba,
+                debit=abs(selisih),
+                kredit=Decimal("0"),
+            )
+            total_debit += abs(selisih)
+
+    print("=== JURNAL PEMBUKA FY 2025 ===")
+    print(f"Total Debit  : {total_debit}")
+    print(f"Total Kredit : {total_kredit}")
+
+    if total_debit == total_kredit:
+        print("✅ Seimbang")
+    else:
+        print("❌ TIDAK seimbang (cek data!)")
+
+if __name__ == "__main__":
+    main()

@@ -2,6 +2,7 @@ import json
 import os
 import django
 from decimal import Decimal
+from datetime import date
 
 # --- Django setup ---
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "laporan_keuangan_telkom.settings")
@@ -10,55 +11,52 @@ django.setup()
 from laporan_keuangan.models import ChartOfAccount, Jurnal, JurnalDetail
 
 JSON_FILE = "csvjson 2.json"
+OPENING_DATE = date(2025, 1, 1)
+SALDO_LABA_NAMA = "Saldo Laba (Ditahan)"
 
-INCLUDE_KATEGORI = {"ASET", "LIABILITAS", "EKUITAS"}
+NERACA_KATEGORI = {"ASET", "LIABILITAS", "EKUITAS"}
 
-def is_aggregate(nama):
-    nama = nama.upper()
-    return nama.startswith("JUMLAH")
+EXCLUDE_NAMA_PREFIX = (
+    "JUMLAH",
+)
 
 def main():
     with open(JSON_FILE, encoding="utf-8") as f:
         data = json.load(f)
 
     jurnal = Jurnal.objects.create(
-        tanggal="2025-01-01",
+        tanggal=OPENING_DATE,
         keterangan="Jurnal Pembuka FY 2025 (Saldo Akhir 2024)",
-        jenis="OPENING"
+        jenis="OPENING",
     )
 
     total_debit = Decimal("0")
     total_kredit = Decimal("0")
-    created = 0
-    skipped = 0
+
+    saldo_laba = ChartOfAccount.objects.get(nama_akun=SALDO_LABA_NAMA)
 
     for row in data:
+        nama = row.get("nama_akun")
         kategori = row.get("Kategori")
-        nama_akun = row.get("nama_akun")
         nilai = row.get("Nilai_2024")
 
-        if not kategori or not nama_akun:
-            skipped += 1
+        if not nama or nilai is None:
             continue
 
-        kategori = kategori.replace(" ", "_")
-
-        if kategori not in INCLUDE_KATEGORI:
-            skipped += 1
+        # --- STRICT FILTERS ---
+        if kategori not in NERACA_KATEGORI:
             continue
 
-        if is_aggregate(nama_akun):
-            skipped += 1
+        if nama.upper().startswith(EXCLUDE_NAMA_PREFIX):
             continue
+
+        nilai = abs(Decimal(str(nilai)))  # ABSOLUTE BALANCE
 
         try:
-            akun = ChartOfAccount.objects.get(nama_akun=nama_akun)
+            akun = ChartOfAccount.objects.get(nama_akun=nama)
         except ChartOfAccount.DoesNotExist:
-            print(f"[WARNING] Akun tidak ditemukan di COA: {nama_akun}")
-            skipped += 1
+            print(f"[SKIP] Akun tidak ditemukan: {nama}")
             continue
-
-        nilai = Decimal(str(nilai))
 
         debit = Decimal("0")
         kredit = Decimal("0")
@@ -74,22 +72,40 @@ def main():
             jurnal=jurnal,
             akun=akun,
             debit=debit,
-            kredit=kredit
+            kredit=kredit,
         )
 
-        created += 1
+    # --- BALANCING ENTRY (SALDO LABA) ---
+    selisih = total_debit - total_kredit
 
-    print("=== IMPORT JURNAL PEMBUKA ===")
-    print(f"Jurnal ID      : {jurnal.id}")
-    print(f"Baris dibuat  : {created}")
-    print(f"Baris dilewati: {skipped}")
-    print(f"Total Debit   : {total_debit}")
+    if selisih != 0:
+        if selisih > 0:
+            # Debit > Kredit → credit saldo laba
+            JurnalDetail.objects.create(
+                jurnal=jurnal,
+                akun=saldo_laba,
+                debit=Decimal("0"),
+                kredit=selisih,
+            )
+            total_kredit += selisih
+        else:
+            # Kredit > Debit → debit saldo laba
+            JurnalDetail.objects.create(
+                jurnal=jurnal,
+                akun=saldo_laba,
+                debit=abs(selisih),
+                kredit=Decimal("0"),
+            )
+            total_debit += abs(selisih)
+
+    print("=== JURNAL PEMBUKA FY 2025 (NERACA ONLY) ===")
+    print(f"Total Debit  : {total_debit}")
     print(f"Total Kredit : {total_kredit}")
 
-    if total_debit != total_kredit:
-        print("Debit dan Kredit TIDAK seimbang!")
+    if total_debit == total_kredit:
+        print("✅ Seimbang")
     else:
-        print("Debit dan Kredit seimbang.")
+        print("❌ TIDAK seimbang — cek data!")
 
 if __name__ == "__main__":
     main()

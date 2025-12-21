@@ -15,7 +15,10 @@ def get_active_period(request):
     period_id = request.session.get("active_period_id")
 
     if period_id:
-        return Period.objects.get(id=period_id)
+        try:
+            return Period.objects.get(id=period_id)
+        except Period.DoesNotExist:
+            del request.session["active_period_id"]
 
     period = Period.objects.filter(is_active=True).first()
     if period:
