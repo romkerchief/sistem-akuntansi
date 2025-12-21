@@ -59,8 +59,8 @@
             </h5>
             <p class="small text-muted">
                 <i class="bi bi-info-circle me-1"></i>
-                Grafik di bawah adalah ilustrasi visual untuk membantu pemahaman struktur laporan keuangan.
-                Untuk data aktual, silakan buka masing-masing laporan.
+                Data ditampilkan berdasarkan periode akuntansi yang aktif.
+                Untuk detail lengkap, silakan buka masing-masing laporan.
             </p>
         </div>
     </div>
@@ -232,126 +232,159 @@
 
         // Initialize charts on DOM ready
         document.addEventListener('DOMContentLoaded', function () {
-            // Neraca Chart (Doughnut)
-            new Chart(document.getElementById('neracaChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Aset', 'Liabilitas', 'Ekuitas'],
-                    datasets: [{
-                        data: [60, 25, 35],
-                        backgroundColor: [colors.info, colors.danger, colors.success],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    cutout: '60%'
-                }
-            });
-
-            // Laba Rugi Chart (Bar)
-            new Chart(document.getElementById('labaRugiChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Pendapatan', 'Beban', 'Laba Bersih'],
-                    datasets: [{
-                        label: 'Nilai',
-                        data: [100, 70, 30],
-                        backgroundColor: [colors.success, colors.danger, colors.primary],
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    plugins: {
-                        ...chartOptions.plugins,
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: { display: false }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-
-            // Arus Kas Chart (Horizontal Bar)
-            new Chart(document.getElementById('arusKasChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Operasi', 'Investasi', 'Pendanaan'],
-                    datasets: [{
-                        label: 'Arus Kas',
-                        data: [45, -20, 10],
-                        backgroundColor: [colors.success, colors.warning, colors.purple],
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    indexAxis: 'y',
-                    plugins: {
-                        ...chartOptions.plugins,
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: { display: false }
-                        },
-                        y: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-
-            // Ekuitas Chart (Stacked Bar showing progression)
-            new Chart(document.getElementById('ekuitasChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Modal Saham', 'Laba Ditahan', 'Total Ekuitas'],
-                    datasets: [
-                        {
-                            label: 'Saldo Awal',
-                            data: [50, 20, 70],
-                            backgroundColor: colors.secondary,
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Perubahan',
-                            data: [0, 15, 15],
-                            backgroundColor: colors.primary,
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    ...chartOptions,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            stacked: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: { display: false }
-                        },
-                        x: {
-                            stacked: true,
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
+            loadNeracaChart();
+            loadLabaRugiChart();
+            loadArusKasChart();
+            loadEkuitasChart();
         });
+
+        // Neraca Chart
+        function loadNeracaChart() {
+            fetch('{% url "finance:api_neraca_data" %}')
+                .then(response => response.json())
+                .then(data => {
+                    new Chart(document.getElementById('neracaChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Aset', 'Liabilitas', 'Ekuitas'],
+                            datasets: [{
+                                data: [data.total_aset, data.total_liabilitas, data.total_ekuitas],
+                                backgroundColor: [colors.info, colors.danger, colors.success],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            ...chartOptions,
+                            cutout: '60%'
+                        }
+                    });
+                })
+                .catch(err => console.error('Neraca chart error:', err));
+        }
+
+        // Laba Rugi Chart
+        function loadLabaRugiChart() {
+            fetch('{% url "finance:api_laba_rugi_data" %}')
+                .then(response => response.json())
+                .then(data => {
+                    new Chart(document.getElementById('labaRugiChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Pendapatan', 'Beban', 'Laba Bersih'],
+                            datasets: [{
+                                label: 'Nilai',
+                                data: [data.total_pendapatan, data.total_beban, data.laba_bersih],
+                                backgroundColor: [colors.success, colors.danger, colors.primary],
+                                borderRadius: 6,
+                                borderSkipped: false
+                            }]
+                        },
+                        options: {
+                            ...chartOptions,
+                            plugins: {
+                                ...chartOptions.plugins,
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0,0,0,0.05)' },
+                                    ticks: { display: false }
+                                },
+                                x: {
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(err => console.error('Laba Rugi chart error:', err));
+        }
+
+        // Arus Kas Chart
+        function loadArusKasChart() {
+            fetch('{% url "finance:api_arus_kas_data" %}')
+                .then(response => response.json())
+                .then(data => {
+                    new Chart(document.getElementById('arusKasChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Operasi', 'Investasi', 'Pendanaan'],
+                            datasets: [{
+                                label: 'Arus Kas',
+                                data: [data.kas_operasi, data.kas_investasi, data.kas_pendanaan],
+                                backgroundColor: [colors.success, colors.warning, colors.purple],
+                                borderRadius: 6,
+                                borderSkipped: false
+                            }]
+                        },
+                        options: {
+                            ...chartOptions,
+                            indexAxis: 'y',
+                            plugins: {
+                                ...chartOptions.plugins,
+                                legend: { display: false }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0,0,0,0.05)' },
+                                    ticks: { display: false }
+                                },
+                                y: {
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(err => console.error('Arus Kas chart error:', err));
+        }
+
+        // Ekuitas Chart
+        function loadEkuitasChart() {
+            fetch('{% url "finance:api_ekuitas_data" %}')
+                .then(response => response.json())
+                .then(data => {
+                    new Chart(document.getElementById('ekuitasChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Total Ekuitas'],
+                            datasets: [
+                                {
+                                    label: 'Saldo Awal',
+                                    data: [data.saldo_awal],
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: 4
+                                },
+                                {
+                                    label: 'Perubahan',
+                                    data: [data.perubahan],
+                                    backgroundColor: data.perubahan >= 0 ? colors.success : colors.danger,
+                                    borderRadius: 4
+                                }
+                            ]
+                        },
+                        options: {
+                            ...chartOptions,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    stacked: true,
+                                    grid: { color: 'rgba(0,0,0,0.05)' },
+                                    ticks: { display: false }
+                                },
+                                x: {
+                                    stacked: true,
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(err => console.error('Ekuitas chart error:', err));
+        }
     })();
 </script>
 

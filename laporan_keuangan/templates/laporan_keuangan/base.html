@@ -113,9 +113,28 @@
                 {% endif %}
             </nav>
 
-            <!-- Sidebar Footer -->
+            <!-- Sidebar Footer - Auth Controls -->
             <div class="sidebar-footer">
-                <small class="text-muted">Case Study</small>
+                {% if user.is_authenticated %}
+                <div class="auth-user">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="auth-text">{{ user.username }}</span>
+                </div>
+                <form method="post" action="{% url 'logout' %}" class="auth-form">
+                    {% csrf_token %}
+                    <button type="submit" class="auth-btn auth-logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span class="auth-text">Logout</span>
+                    </button>
+                </form>
+                {% else %}
+                <form method="get" action="{% url 'login' %}" class="auth-form">
+                    <button type="submit" class="auth-btn auth-login">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        <span class="auth-text">Login</span>
+                    </button>
+                </form>
+                {% endif %}
             </div>
         </aside>
 

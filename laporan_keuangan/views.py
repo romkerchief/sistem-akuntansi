@@ -66,6 +66,7 @@ def saldo_per_akun_as_of(date):
 
     return saldo_map
 
+@login_required
 @require_POST
 def delete_jurnal(request, jurnal_id):
     jurnal = get_object_or_404(Jurnal, id=jurnal_id)
@@ -133,6 +134,7 @@ def jurnal_umum(request):
         "period_end": period_end
     })
 
+@login_required
 def edit_jurnal(request, jurnal_id):
     period = get_active_period(request)
     period_start = period.start_date
@@ -728,3 +730,179 @@ def arus_kas(request):
     }
 
     return render(request, "laporan_keuangan/arus_kas.html", context)
+
+
+# ============================================================================
+# DASHBOARD JSON API ENDPOINTS
+# These endpoints provide aggregated data for Chart.js visualizations
+# ============================================================================
+
+from django.http import JsonResponse
+
+def api_neraca_data(request):
+    """Returns aggregated balance sheet data for dashboard chart."""
+    period = get_active_period(request)
+    if not period:
+        return JsonResponse({"error": "No active period"}, status=400)
+    
+    period_start = period.start_date
+    period_end = period.end_date
+
+    journals = (
+        Jurnal.objects.filter(jenis="OPENING", tanggal__lte=period_start)
+        | Jurnal.objects.filter(jenis="GENERAL", tanggal__range=(period_start, period_end))
+    )
+
+    details = (
+        JurnalDetail.objects
+        .filter(jurnal__in=journals, akun__kategori__in=["ASET", "LIABILITAS", "EKUITAS"])
+        .select_related("akun")
+    )
+
+    saldo_map = defaultdict(lambda: {"akun": None, "debit": Decimal("0"), "kredit": Decimal("0")})
+
+    for d in details:
+        entry = saldo_map[d.akun_id]
+        entry["akun"] = d.akun
+        entry["debit"] += d.debit
+        entry["kredit"] += d.kredit
+
+    total_aset = Decimal("0")
+    total_liabilitas = Decimal("0")
+    total_ekuitas = Decimal("0")
+
+    for data in saldo_map.values():
+        akun = data["akun"]
+        if akun.saldo_normal == "DEBIT":
+            saldo = data["debit"] - data["kredit"]
+        else:
+            saldo = data["kredit"] - data["debit"]
+
+        if akun.kategori == "ASET":
+            total_aset += saldo
+        elif akun.kategori == "LIABILITAS":
+            total_liabilitas += saldo
+        elif akun.kategori == "EKUITAS":
+            total_ekuitas += saldo
+
+    return JsonResponse({
+        "total_aset": float(total_aset),
+        "total_liabilitas": float(total_liabilitas),
+        "total_ekuitas": float(total_ekuitas),
+    })
+
+
+def api_laba_rugi_data(request):
+    """Returns aggregated income statement data for dashboard chart."""
+    period = get_active_period(request)
+    if not period:
+        return JsonResponse({"error": "No active period"}, status=400)
+    
+    period_start = period.start_date
+    period_end = period.end_date
+
+    details = JurnalDetail.objects.filter(
+        jurnal__jenis="GENERAL",
+        jurnal__tanggal__range=[period_start, period_end]
+    )
+
+    total_pendapatan = (
+        details.filter(akun__kategori="PENDAPATAN")
+        .aggregate(total=Sum(F("kredit") - F("debit")))["total"] or Decimal("0")
+    )
+
+    total_beban = (
+        details.filter(akun__kategori="BEBAN")
+        .aggregate(total=Sum(F("debit") - F("kredit")))["total"] or Decimal("0")
+    )
+
+    laba_bersih = total_pendapatan - total_beban
+
+    return JsonResponse({
+        "total_pendapatan": float(total_pendapatan),
+        "total_beban": float(total_beban),
+        "laba_bersih": float(laba_bersih),
+    })
+
+
+def api_arus_kas_data(request):
+    """Returns aggregated cash flow data for dashboard chart."""
+    period = get_active_period(request)
+    if not period:
+        return JsonResponse({"error": "No active period"}, status=400)
+    
+    period_start = period.start_date
+    period_end = period.end_date
+
+    saldo_awal = saldo_per_akun_as_of(period_start - timedelta(days=1))
+    saldo_akhir = saldo_per_akun_as_of(period_end)
+
+    def delta(kode):
+        awal = saldo_awal.get(kode, {}).get("saldo", Decimal("0"))
+        akhir = saldo_akhir.get(kode, {}).get("saldo", Decimal("0"))
+        return akhir - awal
+
+    # Laba bersih
+    laba_bersih = (
+        JurnalDetail.objects
+        .filter(jurnal__jenis="GENERAL", jurnal__tanggal__range=(period_start, period_end), akun__kategori="PENDAPATAN")
+        .aggregate(total=Sum("kredit"))["total"] or Decimal("0")
+    ) - (
+        JurnalDetail.objects
+        .filter(jurnal__jenis="GENERAL", jurnal__tanggal__range=(period_start, period_end), akun__kategori="BEBAN")
+        .aggregate(total=Sum("debit"))["total"] or Decimal("0")
+    )
+
+    # Operating: mirror arus_kas view logic
+    kas_operasi = (
+        laba_bersih
+        - delta("1002")  # Kenaikan Piutang
+        - delta("1004")  # Kenaikan Persediaan
+        + delta("2001")  # Kenaikan Utang Usaha
+        + delta("2003")  # Kenaikan Beban Akrual
+    )
+
+    # Investing
+    kas_investasi = -delta("1009") - delta("1008")
+
+    # Financing
+    kas_pendanaan = delta("2005") - delta("3000-RE")
+
+    return JsonResponse({
+        "kas_operasi": float(kas_operasi),
+        "kas_investasi": float(kas_investasi),
+        "kas_pendanaan": float(kas_pendanaan),
+    })
+
+
+def api_ekuitas_data(request):
+    """Returns aggregated equity changes data for dashboard chart."""
+    period = get_active_period(request)
+    if not period:
+        return JsonResponse({"error": "No active period"}, status=400)
+    
+    period_start = period.start_date
+    period_end = period.end_date
+
+    saldo_awal_map = saldo_per_akun_as_of(period_start - timedelta(days=1))
+    saldo_akhir_map = saldo_per_akun_as_of(period_end)
+
+    ekuitas_accounts = ChartOfAccount.objects.filter(kategori="EKUITAS").order_by("kode_akun")
+
+    total_awal = Decimal("0")
+    total_akhir = Decimal("0")
+
+    for akun in ekuitas_accounts:
+        kode = akun.kode_akun
+        awal = saldo_awal_map.get(kode, {}).get("saldo", Decimal("0"))
+        akhir = saldo_akhir_map.get(kode, {}).get("saldo", Decimal("0"))
+        total_awal += awal
+        total_akhir += akhir
+
+    total_perubahan = total_akhir - total_awal
+
+    return JsonResponse({
+        "saldo_awal": float(total_awal),
+        "perubahan": float(total_perubahan),
+        "saldo_akhir": float(total_akhir),
+    })

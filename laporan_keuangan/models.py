@@ -37,7 +37,7 @@ class Jurnal(models.Model):
     jenis = models.CharField(
         max_length=10,
         choices=JENIS_CHOICES,
-        default="GENERAL"
+        default="GENERAL",
     )
 
     def __str__(self):

@@ -25,4 +25,10 @@ urlpatterns = [
         name="perubahan_ekuitas"
     ),
     path("laporan/arus-kas/", views.arus_kas, name="arus_kas"),
+    
+    # Dashboard API endpoints
+    path("api/neraca-data/", views.api_neraca_data, name="api_neraca_data"),
+    path("api/laba-rugi-data/", views.api_laba_rugi_data, name="api_laba_rugi_data"),
+    path("api/arus-kas-data/", views.api_arus_kas_data, name="api_arus_kas_data"),
+    path("api/ekuitas-data/", views.api_ekuitas_data, name="api_ekuitas_data"),
 ]
