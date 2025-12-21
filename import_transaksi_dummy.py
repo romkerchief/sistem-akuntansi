@@ -11,6 +11,12 @@ from laporan_keuangan.models import Jurnal, JurnalDetail, ChartOfAccount
 
 JSON_FILE = "csvjson 2.json"
 
+SPLITS = [
+    ("Q1 2025", date(2025, 3, 31), Decimal("0.30")),
+    ("Q2 2025", date(2025, 6, 30), Decimal("0.35")),
+    ("Q3 2025", date(2025, 9, 30), Decimal("0.35")),
+]
+
 EXCLUDE_PREFIX = ("JUMLAH",)
 EXCLUDE_NAMA = {
     "Laba Usaha (Operating Profit)",
@@ -30,78 +36,80 @@ def buat_jurnal(tanggal, keterangan, lines):
         JurnalDetail.objects.create(
             jurnal=j,
             akun=akun(nama_akun),
-            debit=Decimal(debit),
-            kredit=Decimal(kredit),
+            debit=debit,
+            kredit=kredit,
         )
 
 with open(JSON_FILE, encoding="utf-8") as f:
     data = json.load(f)
 
-# --- 1. Compute deltas ---
+# --- compute deltas ---
 deltas = []
 for row in data:
     nama = row["nama_akun"]
     kategori = row["Kategori"]
+
+    if kategori == "ARUS_KAS":
+        continue
     if nama.upper().startswith(EXCLUDE_PREFIX):
         continue
     if nama in EXCLUDE_NAMA:
         continue
-    if kategori == "ARUS_KAS":
-        continue
+
     delta = Decimal(row["Nilai_2025"]) - Decimal(row["Nilai_2024"])
     if delta != 0:
         deltas.append((kategori, nama, delta))
 
+# --- generate journals ---
+for label, tanggal, ratio in SPLITS:
+    for kategori, nama, delta in deltas:
+        portion = (abs(delta) * ratio).quantize(Decimal("1"))
 
-# --- 2. Revenue recognition ---
-pendapatan = sum(
-    d for k, _, d in deltas if k == "PENDAPATAN" and d > 0
-)
+        if portion == 0:
+            continue
 
-if pendapatan:
-    buat_jurnal(
-        date(2025, 9, 30),
-        "Pengakuan pendapatan usaha YTD 2025",
-        [
-            ("Piutang Usaha (Pihak Berelasi + Ketiga)", pendapatan, 0),
-            ("Pendapatan Usaha", 0, pendapatan),
-        ],
-    )
+        # Pendapatan
+        if kategori == "PENDAPATAN" and delta > 0:
+            buat_jurnal(
+                tanggal,
+                f"Pengakuan pendapatan {label}",
+                [
+                    ("Piutang Usaha (Pihak Berelasi + Ketiga)", portion, Decimal("0")),
+                    ("Pendapatan Usaha", Decimal("0"), portion),
+                ],
+            )
 
-# --- 3. Operating expenses ---
-for kategori, nama, delta in deltas:
-    if kategori == "BEBAN":
-        buat_jurnal(
-            date(2025, 9, 30),
-            f"Pengakuan {nama} YTD 2025",
-            [
-                (nama, abs(delta), 0),
-                ("Kas dan setara kas", 0, abs(delta)),
-            ],
-        )
+        # Beban
+        elif kategori == "BEBAN":
+            buat_jurnal(
+                tanggal,
+                f"Pengakuan {nama} {label}",
+                [
+                    (nama, portion, Decimal("0")),
+                    ("Kas dan setara kas", Decimal("0"), portion),
+                ],
+            )
 
-# --- 4. Depreciation ---
-for kategori, nama, delta in deltas:
-    if nama == "Aset Tetap" and delta < 0:
-        buat_jurnal(
-            date(2025, 9, 30),
-            "Penyusutan aset tetap YTD 2025",
-            [
-                ("Beban Penyusutan & Amortisasi", abs(delta), 0),
-                ("Aset Tetap", 0, abs(delta)),
-            ],
-        )
+        # Aset Tetap (penyusutan)
+        elif nama == "Aset Tetap" and delta < 0:
+            buat_jurnal(
+                tanggal,
+                f"Penyusutan aset tetap {label}",
+                [
+                    ("Beban Penyusutan & Amortisasi", portion, Decimal("0")),
+                    ("Aset Tetap", Decimal("0"), portion),
+                ],
+            )
 
-# --- 5. Dividends ---
-for kategori, nama, delta in deltas:
-    if kategori == "DIVIDEN":
-        buat_jurnal(
-            date(2025, 6, 30),
-            "Pembayaran dividen tunai",
-            [
-                ("Saldo Laba (Ditahan)", abs(delta), 0),
-                ("Kas dan setara kas", 0, abs(delta)),
-            ],
-        )
+        # Dividen
+        elif kategori == "DIVIDEN":
+            buat_jurnal(
+                tanggal,
+                f"Pembayaran dividen {label}",
+                [
+                    ("Saldo Laba (Ditahan)", portion, Decimal("0")),
+                    ("Kas dan setara kas", Decimal("0"), portion),
+                ],
+            )
 
-print("✅ Dummy transactions generated from JSON deltas.")
+print("✅ Dummy transactions split across Q1–Q3 generated.")
